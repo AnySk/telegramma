@@ -135,6 +135,22 @@ export type ExtraVenue = MakeExtra<
 export type ExtraVideo = MakeExtra<'sendVideo', 'video'>
 export type ExtraVideoNote = MakeExtra<'sendVideoNote', 'video_note'>
 export type ExtraVoice = MakeExtra<'sendVoice', 'voice'>
+export type ExtraLivePhoto = MakeExtra<'sendLivePhoto', 'live_photo' | 'photo'>
+export type ExtraRichMessage = MakeExtra<'sendRichMessage', 'rich_message'>
+export type ExtraRichMessageDraft = MakeExtra<
+  'sendRichMessageDraft',
+  'draft_id' | 'rich_message'
+>
+export type ExtraDeleteMessageReaction = MakeExtra<
+  'deleteMessageReaction',
+  'message_id'
+>
+export type ExtraDeleteAllMessageReactions =
+  MakeExtra<'deleteAllMessageReactions'>
+export type ExtraSetManagedBotAccessSettings = MakeExtra<
+  'setManagedBotAccessSettings',
+  'user_id' | 'is_access_restricted'
+>
 export type ExtraBanChatSenderChat = MakeExtra<
   'banChatSenderChat',
   'sender_chat_id'

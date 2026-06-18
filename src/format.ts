@@ -1,4 +1,4 @@
-import { User } from '@telegraf/types'
+import { User } from '@anysk/telegramma-types'
 import {
   FmtString,
   createFmt,

@@ -460,14 +460,14 @@ export class Telegram extends ApiClient {
   sendPoll(
     chatId: number | string,
     question: string,
-    options: readonly string[],
+    options: readonly (string | tg.InputPollOption<tg.InputFile>)[],
     extra?: tt.ExtraPoll
   ) {
     return this.callApi('sendPoll', {
       chat_id: chatId,
       type: 'regular',
       question,
-      options,
+      options: options.map((o) => (typeof o === 'string' ? { text: o } : o)),
       ...extra,
     })
   }
@@ -481,14 +481,14 @@ export class Telegram extends ApiClient {
   sendQuiz(
     chatId: number | string,
     question: string,
-    options: readonly string[],
+    options: readonly (string | tg.InputPollOption<tg.InputFile>)[],
     extra?: tt.ExtraPoll
   ) {
     return this.callApi('sendPoll', {
       chat_id: chatId,
       type: 'quiz',
       question,
-      options,
+      options: options.map((o) => (typeof o === 'string' ? { text: o } : o)),
       ...extra,
     })
   }
@@ -870,7 +870,9 @@ export class Telegram extends ApiClient {
       inline_message_id: inlineMessageId,
       ...extra,
       ...t,
-    })
+      // editMessageText is overloaded on chat_id/inline_message_id presence; this
+      // generic wrapper supplies whichever the caller passed.
+    } as unknown as tg.Opts<'editMessageText'>)
   }
 
   /**
@@ -1315,11 +1317,13 @@ export class Telegram extends ApiClient {
   setStickerSetThumbnail(
     name: string,
     userId: number,
+    format: tg.Opts<'setStickerSetThumbnail'>['format'],
     thumbnail?: tg.Opts<'setStickerSetThumbnail'>['thumbnail']
   ) {
     return this.callApi('setStickerSetThumbnail', {
       name,
       user_id: userId,
+      format,
       thumbnail,
     })
   }
@@ -1614,6 +1618,172 @@ export class Telegram extends ApiClient {
   }: { forChannels?: boolean } = {}) {
     return this.callApi('getMyDefaultAdministratorRights', {
       for_channels: forChannels,
+    })
+  }
+
+  /**
+   * Remove a reaction from a message in a group or supergroup chat. The bot must have the can_delete_messages administrator right. Returns True on success.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param messageId Identifier of the target message
+   */
+  deleteMessageReaction(
+    chatId: number | string,
+    messageId: number,
+    extra?: tt.ExtraDeleteMessageReaction
+  ) {
+    return this.callApi('deleteMessageReaction', {
+      chat_id: chatId,
+      message_id: messageId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Remove up to 10000 recent reactions in a group or supergroup chat added by a given user or chat. The bot must have the can_delete_messages administrator right. Returns True on success.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   */
+  deleteAllMessageReactions(
+    chatId: number | string,
+    extra?: tt.ExtraDeleteAllMessageReactions
+  ) {
+    return this.callApi('deleteAllMessageReactions', {
+      chat_id: chatId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Reply to a received guest message. On success, a SentGuestMessage object is returned.
+   * @param guestQueryId Unique identifier for the query to be answered
+   * @param result An object describing the message to be sent
+   */
+  answerGuestQuery(guestQueryId: string, result: tg.InlineQueryResult) {
+    return this.callApi('answerGuestQuery', {
+      guest_query_id: guestQueryId,
+      result,
+    })
+  }
+
+  /**
+   * Get the access settings of a managed bot. Returns a BotAccessSettings object on success.
+   * @param userId User identifier of the managed bot whose access settings will be returned
+   */
+  getManagedBotAccessSettings(userId: number) {
+    return this.callApi('getManagedBotAccessSettings', {
+      user_id: userId,
+    })
+  }
+
+  /**
+   * Change the access settings of a managed bot. Returns True on success.
+   * @param userId User identifier of the managed bot whose access settings will be changed
+   * @param isAccessRestricted Pass True if only selected users can access the bot
+   */
+  setManagedBotAccessSettings(
+    userId: number,
+    isAccessRestricted: boolean,
+    extra?: tt.ExtraSetManagedBotAccessSettings
+  ) {
+    return this.callApi('setManagedBotAccessSettings', {
+      user_id: userId,
+      is_access_restricted: isAccessRestricted,
+      ...extra,
+    })
+  }
+
+  /**
+   * Get the last messages from the personal chat of a given user. On success, an array of Message objects is returned.
+   * @param userId Unique identifier for the target user
+   * @param limit The maximum number of messages to return; 1-20
+   */
+  getUserPersonalChatMessages(userId: number, limit: number) {
+    return this.callApi('getUserPersonalChatMessages', {
+      user_id: userId,
+      limit,
+    })
+  }
+
+  /**
+   * Send a live photo. On success, the sent Message is returned.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   * @param livePhoto Live photo video to send
+   * @param photo The static photo to send
+   */
+  sendLivePhoto(
+    chatId: number | string,
+    livePhoto: tg.Opts<'sendLivePhoto'>['live_photo'],
+    photo: tg.Opts<'sendLivePhoto'>['photo'],
+    extra?: tt.ExtraLivePhoto
+  ) {
+    return this.callApi('sendLivePhoto', {
+      chat_id: chatId,
+      live_photo: livePhoto,
+      photo,
+      ...fmtCaption(extra),
+    })
+  }
+
+  /**
+   * Send a rich message. On success, the sent Message is returned.
+   * @param chatId Unique identifier for the target chat or username of the target bot, supergroup or channel (in the format @username)
+   * @param richMessage The message to be sent
+   */
+  sendRichMessage(
+    chatId: number | string,
+    richMessage: tg.InputRichMessage,
+    extra?: tt.ExtraRichMessage
+  ) {
+    return this.callApi('sendRichMessage', {
+      chat_id: chatId,
+      rich_message: richMessage,
+      ...extra,
+    })
+  }
+
+  /**
+   * Stream a partial rich message to a user while it is being generated. Returns True on success.
+   * @param chatId Unique identifier for the target private chat
+   * @param draftId Unique identifier of the message draft; must be non-zero
+   * @param richMessage The partial message to be streamed
+   */
+  sendRichMessageDraft(
+    chatId: number,
+    draftId: number,
+    richMessage: tg.InputRichMessage,
+    extra?: tt.ExtraRichMessageDraft
+  ) {
+    return this.callApi('sendRichMessageDraft', {
+      chat_id: chatId,
+      draft_id: draftId,
+      rich_message: richMessage,
+      ...extra,
+    })
+  }
+
+  /**
+   * Process a received chat join request query. Returns True on success.
+   * @param chatJoinRequestQueryId Unique identifier of the join request query
+   * @param result Result of the query: "approve", "decline", or "queue"
+   */
+  answerChatJoinRequestQuery(
+    chatJoinRequestQueryId: string,
+    result: tg.Opts<'answerChatJoinRequestQuery'>['result']
+  ) {
+    return this.callApi('answerChatJoinRequestQuery', {
+      chat_join_request_query_id: chatJoinRequestQueryId,
+      result,
+    })
+  }
+
+  /**
+   * Process a received chat join request query by showing a Mini App to the user before deciding the outcome. Returns True on success.
+   * @param chatJoinRequestQueryId Unique identifier of the join request query
+   * @param webAppUrl The URL of the Mini App to be opened
+   */
+  sendChatJoinRequestWebApp(chatJoinRequestQueryId: string, webAppUrl: string) {
+    return this.callApi('sendChatJoinRequestWebApp', {
+      chat_join_request_query_id: chatJoinRequestQueryId,
+      web_app_url: webAppUrl,
     })
   }
 

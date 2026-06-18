@@ -653,6 +653,49 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   }
 
   /**
+   * @see https://core.telegram.org/bots/api#sendlivephoto
+   */
+  sendLivePhoto(
+    livePhoto: tg.Opts<'sendLivePhoto'>['live_photo'],
+    photo: tg.Opts<'sendLivePhoto'>['photo'],
+    extra?: tt.ExtraLivePhoto
+  ) {
+    this.assert(this.chat, 'sendLivePhoto')
+    return this.telegram.sendLivePhoto(this.chat.id, livePhoto, photo, {
+      message_thread_id: getThreadId(this),
+      ...extra,
+    })
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendlivephoto
+   */
+  replyWithLivePhoto(...args: Shorthand<'sendLivePhoto'>) {
+    return this.sendLivePhoto(...args)
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendrichmessage
+   */
+  sendRichMessage(
+    richMessage: tg.InputRichMessage,
+    extra?: tt.ExtraRichMessage
+  ) {
+    this.assert(this.chat, 'sendRichMessage')
+    return this.telegram.sendRichMessage(this.chat.id, richMessage, {
+      message_thread_id: getThreadId(this),
+      ...extra,
+    })
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendrichmessage
+   */
+  replyWithRichMessage(...args: Shorthand<'sendRichMessage'>) {
+    return this.sendRichMessage(...args)
+  }
+
+  /**
    * @see https://core.telegram.org/bots/api#sendmediagroup
    */
   sendMediaGroup(media: tt.MediaGroup, extra?: tt.ExtraMediaGroup) {
@@ -856,7 +899,11 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   /**
    * @see https://core.telegram.org/bots/api#sendpoll
    */
-  sendPoll(poll: string, options: readonly string[], extra?: tt.ExtraPoll) {
+  sendPoll(
+    poll: string,
+    options: readonly (string | tg.InputPollOption<tg.InputFile>)[],
+    extra?: tt.ExtraPoll
+  ) {
     this.assert(this.chat, 'sendPoll')
     return this.telegram.sendPoll(this.chat.id, poll, options, {
       message_thread_id: getThreadId(this),
@@ -874,7 +921,11 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   /**
    * @see https://core.telegram.org/bots/api#sendpoll
    */
-  sendQuiz(quiz: string, options: readonly string[], extra?: tt.ExtraPoll) {
+  sendQuiz(
+    quiz: string,
+    options: readonly (string | tg.InputPollOption<tg.InputFile>)[],
+    extra?: tt.ExtraPoll
+  ) {
     this.assert(this.chat, 'sendQuiz')
     return this.telegram.sendQuiz(this.chat.id, quiz, options, {
       message_thread_id: getThreadId(this),

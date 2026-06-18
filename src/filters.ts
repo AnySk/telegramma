@@ -3,7 +3,7 @@ import type {
   CommonMessageBundle,
   Message,
   Update,
-} from '@telegraf/types'
+} from '@anysk/telegramma-types'
 import { DistinctKeys, KeyedDistinct, Guarded } from './core/helpers/util'
 
 export type Filter<U extends Update> = (update: Update) => update is U

@@ -1,4 +1,4 @@
-import { ReplyParameters } from '@telegraf/types'
+import { ReplyParameters } from '@anysk/telegramma-types'
 import Context from './context'
 import { Middleware } from './middleware'
 
@@ -121,6 +121,23 @@ const replyContext: ReplyContext = {
     this.assert(this.chat, 'replyWithPhoto')
     return this.telegram.sendPhoto(this.chat.id, photo, makeReply(this, extra))
   },
+  replyWithLivePhoto(this: Context, livePhoto, photo, extra) {
+    this.assert(this.chat, 'replyWithLivePhoto')
+    return this.telegram.sendLivePhoto(
+      this.chat.id,
+      livePhoto,
+      photo,
+      makeReply(this, extra)
+    )
+  },
+  replyWithRichMessage(this: Context, richMessage, extra) {
+    this.assert(this.chat, 'replyWithRichMessage')
+    return this.telegram.sendRichMessage(
+      this.chat.id,
+      richMessage,
+      makeReply(this, extra)
+    )
+  },
   replyWithPoll(this: Context, question, options, extra) {
     this.assert(this.chat, 'replyWithPoll')
     return this.telegram.sendPoll(
@@ -188,6 +205,8 @@ export function useNewReplies<C extends Context>(): Middleware<C> {
   return (ctx, next) => {
     ctx.reply = replyContext.reply
     ctx.replyWithPhoto = replyContext.replyWithPhoto
+    ctx.replyWithLivePhoto = replyContext.replyWithLivePhoto
+    ctx.replyWithRichMessage = replyContext.replyWithRichMessage
     ctx.replyWithMediaGroup = replyContext.replyWithMediaGroup
     ctx.replyWithAudio = replyContext.replyWithAudio
     ctx.replyWithDice = replyContext.replyWithDice

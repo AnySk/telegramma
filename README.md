@@ -2,30 +2,25 @@
 
 <div align="center">
 <img src="docs/assets/logo.svg" alt="logo" height="90" align="center">
-<h1 align="center">telegraf.js</h1>
+<h1 align="center">telegramma</h1>
 
 <p>Modern Telegram Bot API framework for Node.js</p>
 
 <a href="https://core.telegram.org/bots/api">
-	<img src="https://img.shields.io/badge/Bot%20API-v7.1-f36caf.svg?style=flat-square" alt="Bot API Version" />
+	<img src="https://img.shields.io/badge/Bot%20API-v10.1-f36caf.svg?style=flat-square" alt="Bot API Version" />
 </a>
-<a href="https://packagephobia.com/result?p=telegraf,node-telegram-bot-api">
-	<img src="https://flat.badgen.net/packagephobia/install/telegraf" alt="install size" />
+<a href="https://packagephobia.com/result?p=@anysk/telegramma">
+	<img src="https://flat.badgen.net/packagephobia/install/@anysk/telegramma" alt="install size" />
 </a>
-<a href="https://github.com/telegraf/telegraf">
-	<img src="https://img.shields.io/github/languages/top/telegraf/telegraf?style=flat-square&logo=github" alt="GitHub top language" />
-</a>
-<a href="https://telegram.me/TelegrafJSChat">
-	<img src="https://img.shields.io/badge/English%20chat-grey?style=flat-square&logo=telegram" alt="English chat" />
+<a href="https://github.com/AnySk/telegramma">
+	<img src="https://img.shields.io/github/languages/top/AnySk/telegramma?style=flat-square&logo=github" alt="GitHub top language" />
 </a>
 </div>
 
 </header>
 
-## For 3.x users
+> **Fork notice.** `telegramma` is a maintained fork of [Telegraf](https://github.com/telegraf/telegraf), published as **`@anysk/telegramma`**. It tracks the latest **Telegram Bot API (v10.1)** by depending on [`@anysk/telegramma-types`](https://github.com/AnySk/telegramma-types) and adding the corresponding API methods (rich messages, live photos, guest mode, poll media, join-request queries, etc.). The public API is otherwise unchanged from Telegraf v4.
 
-- [3.x docs](https://telegraf.js.org/v3)
-- [4.0 release notes](https://github.com/telegraf/telegraf/releases/tag/v4.0.0)
 
 ## Introduction
 
@@ -37,9 +32,9 @@ Telegraf is a library that makes it simple for you to develop your own Telegram 
 
 ### Features
 
-- Full [Telegram Bot API 7.1](https://core.telegram.org/bots/api) support
-- [Excellent TypeScript typings](https://github.com/telegraf/telegraf/releases/tag/v4.0.0)
-- [Lightweight](https://packagephobia.com/result?p=telegraf,node-telegram-bot-api)
+- Full [Telegram Bot API 10.1](https://core.telegram.org/bots/api) support
+- [Excellent TypeScript typings](https://github.com/AnySk/telegramma-types)
+- [Lightweight](https://packagephobia.com/result?p=@anysk/telegramma)
 - [AWS **λ**](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html)
   / [Firebase](https://firebase.google.com/products/functions/)
   / [Glitch](https://glitch.com/edit/#!/dashing-light)

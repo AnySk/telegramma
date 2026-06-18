@@ -14,6 +14,7 @@ type ReactionCtx = { update: Partial<tg.Update.MessageReactionUpdate> }
 const inspectReaction = (reaction: tg.ReactionType) => {
   if (reaction.type === 'custom_emoji')
     return `Custom(${reaction.custom_emoji_id})`
+  else if (reaction.type === 'paid') return 'Paid'
   else return reaction.emoji
 }
 
