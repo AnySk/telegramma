@@ -1,7 +1,6 @@
 <header>
 
 <div align="center">
-<img src="docs/assets/logo.svg" alt="logo" height="90" align="center">
 <h1 align="center">telegramma</h1>
 
 <p>Modern Telegram Bot API framework for Node.js</p>
