@@ -45,8 +45,8 @@ Telegraf is a library that makes it simple for you to develop your own Telegram 
 ### Example
 
 ```js
-const { Telegraf } = require('telegraf')
-const { message } = require('telegraf/filters')
+const { Telegraf } = require('@anysk/telegramma')
+const { message } = require('@anysk/telegramma/filters')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 bot.start((ctx) => ctx.reply('Welcome'))
@@ -61,7 +61,7 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 ```
 
 ```js
-const { Telegraf } = require('telegraf')
+const { Telegraf } = require('@anysk/telegramma')
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 bot.command('oldschool', (ctx) => ctx.reply('Hello'))
@@ -100,19 +100,19 @@ BotFather will give you a _token_, something like `123456789:AbCdefGhIJKlmNoPQRs
 ### Installation
 
 ```shellscript
-$ npm install telegraf
+$ npm install @anysk/telegramma
 ```
 
 or
 
 ```shellscript
-$ yarn add telegraf
+$ yarn add @anysk/telegramma
 ```
 
 or
 
 ```shellscript
-$ pnpm add telegraf
+$ pnpm add @anysk/telegramma
 ```
 
 ### `Telegraf` class
@@ -154,8 +154,8 @@ Here is a list of
 #### Shorthand methods
 
 ```js
-import { Telegraf } from 'telegraf'
-import { message } from 'telegraf/filters'
+import { Telegraf } from '@anysk/telegramma'
+import { message } from '@anysk/telegramma/filters'
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -204,8 +204,8 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 ### Webhooks
 
 ```TS
-import { Telegraf } from "telegraf";
-import { message } from 'telegraf/filters';
+import { Telegraf } from "@anysk/telegramma";
+import { message } from '@anysk/telegramma/filters';
 
 const bot = new Telegraf(token);
 
@@ -316,8 +316,8 @@ As in Koa and some other middleware-based libraries,
 `await next()` will call next middleware and wait for it to finish:
 
 ```TS
-import { Telegraf } from 'telegraf';
-import { message } from 'telegraf/filters';
+import { Telegraf } from '@anysk/telegramma';
+import { message } from '@anysk/telegramma/filters';
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -366,7 +366,7 @@ Consequently, you can change the type of `ctx` to fit your needs in order for yo
 This is done through Generics:
 
 ```ts
-import { Context, Telegraf } from 'telegraf'
+import { Context, Telegraf } from '@anysk/telegramma'
 
 // Define your own context type
 interface MyContext extends Context {

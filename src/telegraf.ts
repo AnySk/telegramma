@@ -15,6 +15,7 @@ import pTimeout from 'p-timeout'
 import Telegram from './telegram'
 import { TlsOptions } from 'tls'
 import { URL } from 'url'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import safeCompare = require('safe-compare')
 const debug = d('telegraf:main')
 

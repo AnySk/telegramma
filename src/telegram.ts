@@ -537,8 +537,15 @@ export class Telegram extends ApiClient {
    * Get the number of members in a chat.
    * @param chatId Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
    */
-  getChatMembersCount(chatId: string | number) {
-    return this.callApi('getChatMembersCount', { chat_id: chatId })
+  getChatMemberCount(chatId: string | number) {
+    return this.callApi('getChatMemberCount', { chat_id: chatId })
+  }
+
+  /**
+   * @deprecated since API 5.3. Use {@link Telegram.getChatMemberCount}
+   */
+  get getChatMembersCount() {
+    return this.getChatMemberCount
   }
 
   /**
@@ -1784,6 +1791,760 @@ export class Telegram extends ApiClient {
     return this.callApi('sendChatJoinRequestWebApp', {
       chat_join_request_query_id: chatJoinRequestQueryId,
       web_app_url: webAppUrl,
+    })
+  }
+
+  // Telegram Stars & payments
+
+  /**
+   * Get the current Telegram Stars balance of the bot. Returns a StarAmount object on success.
+   */
+  getMyStarBalance() {
+    return this.callApi('getMyStarBalance', {})
+  }
+
+  /**
+   * Get the bot's Telegram Star transactions in chronological order. Returns a StarTransactions object on success.
+   * @param offset Number of transactions to skip in the response
+   * @param limit The maximum number of transactions to be retrieved; 1-100. Defaults to 100
+   */
+  getStarTransactions(offset?: number, limit?: number) {
+    return this.callApi('getStarTransactions', { offset, limit })
+  }
+
+  /**
+   * Refund a successful payment in Telegram Stars. Returns True on success.
+   * @param userId Identifier of the user whose payment will be refunded
+   * @param telegramPaymentChargeId Telegram payment identifier
+   */
+  refundStarPayment(userId: number, telegramPaymentChargeId: string) {
+    return this.callApi('refundStarPayment', {
+      user_id: userId,
+      telegram_payment_charge_id: telegramPaymentChargeId,
+    })
+  }
+
+  /**
+   * Cancel or re-enable extension of a subscription paid in Telegram Stars. Returns True on success.
+   * @param userId Identifier of the user whose subscription will be edited
+   * @param telegramPaymentChargeId Telegram payment identifier for the subscription
+   * @param isCanceled Pass True to cancel extension of the subscription; pass False to re-enable a previously canceled subscription
+   */
+  editUserStarSubscription(
+    userId: number,
+    telegramPaymentChargeId: string,
+    isCanceled: boolean
+  ) {
+    return this.callApi('editUserStarSubscription', {
+      user_id: userId,
+      telegram_payment_charge_id: telegramPaymentChargeId,
+      is_canceled: isCanceled,
+    })
+  }
+
+  // Subscription invite links
+
+  /**
+   * Create a subscription invite link for a channel chat. The bot must have the can_invite_users administrator right. Returns the new invite link as a ChatInviteLink object.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   * @param subscriptionPeriod The number of seconds the subscription is active before the next payment; currently must always be 2592000 (30 days)
+   * @param subscriptionPrice The amount of Telegram Stars a user must pay for each subscription period; 1-10000
+   * @param name Invite link name; 0-32 characters
+   */
+  createChatSubscriptionInviteLink(
+    chatId: number | string,
+    subscriptionPeriod: tg.Opts<'createChatSubscriptionInviteLink'>['subscription_period'],
+    subscriptionPrice: number,
+    name?: string
+  ) {
+    return this.callApi('createChatSubscriptionInviteLink', {
+      chat_id: chatId,
+      subscription_period: subscriptionPeriod,
+      subscription_price: subscriptionPrice,
+      name,
+    })
+  }
+
+  /**
+   * Edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator right. Returns the edited invite link as a ChatInviteLink object.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   * @param inviteLink The invite link to edit
+   * @param name Invite link name; 0-32 characters
+   */
+  editChatSubscriptionInviteLink(
+    chatId: number | string,
+    inviteLink: string,
+    name?: string
+  ) {
+    return this.callApi('editChatSubscriptionInviteLink', {
+      chat_id: chatId,
+      invite_link: inviteLink,
+      name,
+    })
+  }
+
+  // Gifts
+
+  /**
+   * Get the list of gifts that can be sent by the bot to users and channel chats. Returns a Gifts object.
+   */
+  getAvailableGifts() {
+    return this.callApi('getAvailableGifts', {})
+  }
+
+  /**
+   * Send a gift to the given user or channel chat. The recipient (`user_id` or `chat_id`) is passed via `extra`. Returns True on success.
+   * @param giftId Identifier of the gift
+   * @param extra Recipient and additional gift options
+   */
+  sendGift(giftId: string, extra: tt.ExtraSendGift) {
+    return this.callApi('sendGift', {
+      gift_id: giftId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Gift a Telegram Premium subscription to the given user. Returns True on success.
+   * @param userId Unique identifier of the target user who will receive the subscription
+   * @param monthCount Number of months the subscription will be active for; must be one of 3, 6, or 12
+   * @param starCount Number of Telegram Stars to pay; must be 1000 for 3 months, 1500 for 6 months, and 2500 for 12 months
+   */
+  giftPremiumSubscription(
+    userId: number,
+    monthCount: tg.Opts<'giftPremiumSubscription'>['month_count'],
+    starCount: tg.Opts<'giftPremiumSubscription'>['star_count'],
+    extra?: tt.ExtraGiftPremiumSubscription
+  ) {
+    return this.callApi('giftPremiumSubscription', {
+      user_id: userId,
+      month_count: monthCount,
+      star_count: starCount,
+      ...extra,
+    })
+  }
+
+  /**
+   * Get the gifts owned and hosted by a user. Returns an OwnedGifts object.
+   * @param userId Unique identifier of the user
+   */
+  getUserGifts(userId: number, extra?: tt.ExtraGetUserGifts) {
+    return this.callApi('getUserGifts', {
+      user_id: userId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Get the gifts owned by a chat. Returns an OwnedGifts object.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   */
+  getChatGifts(chatId: number | string, extra?: tt.ExtraGetChatGifts) {
+    return this.callApi('getChatGifts', {
+      chat_id: chatId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Convert a given regular gift to Telegram Stars. Requires the can_convert_gifts_to_stars business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param ownedGiftId Unique identifier of the regular gift that should be converted to Telegram Stars
+   */
+  convertGiftToStars(businessConnectionId: string, ownedGiftId: string) {
+    return this.callApi('convertGiftToStars', {
+      business_connection_id: businessConnectionId,
+      owned_gift_id: ownedGiftId,
+    })
+  }
+
+  /**
+   * Upgrade a given regular gift to a unique gift. Requires the can_transfer_and_upgrade_gifts business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param ownedGiftId Unique identifier of the regular gift that should be upgraded to a unique one
+   */
+  upgradeGift(
+    businessConnectionId: string,
+    ownedGiftId: string,
+    extra?: tt.ExtraUpgradeGift
+  ) {
+    return this.callApi('upgradeGift', {
+      business_connection_id: businessConnectionId,
+      owned_gift_id: ownedGiftId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Transfer an owned unique gift to another user. Requires the can_transfer_and_upgrade_gifts business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param ownedGiftId Unique identifier of the regular gift that should be transferred
+   * @param newOwnerChatId Unique identifier of the chat which will own the gift
+   * @param starCount The amount of Telegram Stars that will be paid for the transfer from the business account balance
+   */
+  transferGift(
+    businessConnectionId: string,
+    ownedGiftId: string,
+    newOwnerChatId: number,
+    starCount?: number
+  ) {
+    return this.callApi('transferGift', {
+      business_connection_id: businessConnectionId,
+      owned_gift_id: ownedGiftId,
+      new_owner_chat_id: newOwnerChatId,
+      star_count: starCount,
+    })
+  }
+
+  // Business accounts
+
+  /**
+   * Get information about the connection of the bot with a business account. Returns a BusinessConnection object on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   */
+  getBusinessConnection(businessConnectionId: string) {
+    return this.callApi('getBusinessConnection', {
+      business_connection_id: businessConnectionId,
+    })
+  }
+
+  /**
+   * Mark an incoming message as read on behalf of a business account. Requires the can_read_messages business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection on behalf of which to read the message
+   * @param chatId Unique identifier of the chat in which the message was received
+   * @param messageId Unique identifier of the message to mark as read
+   */
+  readBusinessMessage(
+    businessConnectionId: string,
+    chatId: number,
+    messageId: number
+  ) {
+    return this.callApi('readBusinessMessage', {
+      business_connection_id: businessConnectionId,
+      chat_id: chatId,
+      message_id: messageId,
+    })
+  }
+
+  /**
+   * Delete messages on behalf of a business account. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection on behalf of which to delete the messages
+   * @param messageIds A list of 1-100 identifiers of messages to delete; all messages must be from the same chat
+   */
+  deleteBusinessMessages(businessConnectionId: string, messageIds: number[]) {
+    return this.callApi('deleteBusinessMessages', {
+      business_connection_id: businessConnectionId,
+      message_ids: messageIds,
+    })
+  }
+
+  /**
+   * Change the first and last name of a managed business account. Requires the can_change_name business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param firstName The new value of the first name for the business account; 1-64 characters
+   * @param lastName The new value of the last name for the business account; 0-64 characters
+   */
+  setBusinessAccountName(
+    businessConnectionId: string,
+    firstName: string,
+    lastName?: string
+  ) {
+    return this.callApi('setBusinessAccountName', {
+      business_connection_id: businessConnectionId,
+      first_name: firstName,
+      last_name: lastName,
+    })
+  }
+
+  /**
+   * Change the username of a managed business account. Requires the can_change_username business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param username The new value of the username for the business account; 0-32 characters
+   */
+  setBusinessAccountUsername(businessConnectionId: string, username?: string) {
+    return this.callApi('setBusinessAccountUsername', {
+      business_connection_id: businessConnectionId,
+      username,
+    })
+  }
+
+  /**
+   * Change the bio of a managed business account. Requires the can_change_bio business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param bio The new value of the bio for the business account; 0-140 characters
+   */
+  setBusinessAccountBio(businessConnectionId: string, bio?: string) {
+    return this.callApi('setBusinessAccountBio', {
+      business_connection_id: businessConnectionId,
+      bio,
+    })
+  }
+
+  /**
+   * Change the profile photo of a managed business account. Requires the can_edit_profile_photo business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param photo The new profile photo to set
+   * @param isPublic Pass True to set the public photo, visible even if the main photo is hidden by privacy settings
+   */
+  setBusinessAccountProfilePhoto(
+    businessConnectionId: string,
+    photo: tg.Opts<'setBusinessAccountProfilePhoto'>['photo'],
+    isPublic?: boolean
+  ) {
+    return this.callApi('setBusinessAccountProfilePhoto', {
+      business_connection_id: businessConnectionId,
+      photo,
+      is_public: isPublic,
+    })
+  }
+
+  /**
+   * Remove the current profile photo of a managed business account. Requires the can_edit_profile_photo business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param isPublic Pass True to remove the public photo
+   */
+  removeBusinessAccountProfilePhoto(
+    businessConnectionId: string,
+    isPublic?: boolean
+  ) {
+    return this.callApi('removeBusinessAccountProfilePhoto', {
+      business_connection_id: businessConnectionId,
+      is_public: isPublic,
+    })
+  }
+
+  /**
+   * Change the privacy settings pertaining to incoming gifts in a managed business account. Requires the can_change_gift_settings business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param showGiftButton Pass True if a button for sending a gift must always be shown in the input field
+   * @param acceptedGiftTypes Types of gifts accepted by the business account
+   */
+  setBusinessAccountGiftSettings(
+    businessConnectionId: string,
+    showGiftButton: boolean,
+    acceptedGiftTypes: tg.Opts<'setBusinessAccountGiftSettings'>['accepted_gift_types']
+  ) {
+    return this.callApi('setBusinessAccountGiftSettings', {
+      business_connection_id: businessConnectionId,
+      show_gift_button: showGiftButton,
+      accepted_gift_types: acceptedGiftTypes,
+    })
+  }
+
+  /**
+   * Get the amount of Telegram Stars owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns a StarAmount object on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   */
+  getBusinessAccountStarBalance(businessConnectionId: string) {
+    return this.callApi('getBusinessAccountStarBalance', {
+      business_connection_id: businessConnectionId,
+    })
+  }
+
+  /**
+   * Transfer Telegram Stars from the business account balance to the bot's balance. Requires the can_transfer_stars business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param starCount Number of Telegram Stars to transfer; 1-10000
+   */
+  transferBusinessAccountStars(
+    businessConnectionId: string,
+    starCount: number
+  ) {
+    return this.callApi('transferBusinessAccountStars', {
+      business_connection_id: businessConnectionId,
+      star_count: starCount,
+    })
+  }
+
+  /**
+   * Get the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns an OwnedGifts object on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   */
+  getBusinessAccountGifts(
+    businessConnectionId: string,
+    extra?: tt.ExtraGetBusinessAccountGifts
+  ) {
+    return this.callApi('getBusinessAccountGifts', {
+      business_connection_id: businessConnectionId,
+      ...extra,
+    })
+  }
+
+  // Stories
+
+  /**
+   * Post a story on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns a Story object on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param content Content of the story
+   * @param activePeriod Period after which the story is moved to the archive, in seconds; one of 21600, 43200, 86400, or 172800
+   */
+  postStory(
+    businessConnectionId: string,
+    content: tg.Opts<'postStory'>['content'],
+    activePeriod: tg.Opts<'postStory'>['active_period'],
+    extra?: tt.ExtraPostStory
+  ) {
+    return this.callApi('postStory', {
+      business_connection_id: businessConnectionId,
+      content,
+      active_period: activePeriod,
+      ...fmtCaption(extra),
+    })
+  }
+
+  /**
+   * Repost a story on behalf of a business account from another business account managed by the same bot. Requires the can_manage_stories business bot right for both accounts. Returns a Story object on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param fromChatId Unique identifier of the chat which posted the story that should be reposted
+   * @param fromStoryId Unique identifier of the story that should be reposted
+   * @param activePeriod Period after which the story is moved to the archive, in seconds; one of 21600, 43200, 86400, or 172800
+   */
+  repostStory(
+    businessConnectionId: string,
+    fromChatId: number,
+    fromStoryId: number,
+    activePeriod: tg.Opts<'repostStory'>['active_period'],
+    extra?: tt.ExtraRepostStory
+  ) {
+    return this.callApi('repostStory', {
+      business_connection_id: businessConnectionId,
+      from_chat_id: fromChatId,
+      from_story_id: fromStoryId,
+      active_period: activePeriod,
+      ...extra,
+    })
+  }
+
+  /**
+   * Edit a story previously posted by the bot on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns a Story object on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param storyId Unique identifier of the story to edit
+   * @param content Content of the story
+   */
+  editStory(
+    businessConnectionId: string,
+    storyId: number,
+    content: tg.Opts<'editStory'>['content'],
+    extra?: tt.ExtraEditStory
+  ) {
+    return this.callApi('editStory', {
+      business_connection_id: businessConnectionId,
+      story_id: storyId,
+      content,
+      ...fmtCaption(extra),
+    })
+  }
+
+  /**
+   * Delete a story previously posted by the bot on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param storyId Unique identifier of the story to delete
+   */
+  deleteStory(businessConnectionId: string, storyId: number) {
+    return this.callApi('deleteStory', {
+      business_connection_id: businessConnectionId,
+      story_id: storyId,
+    })
+  }
+
+  // Checklists
+
+  /**
+   * Send a checklist on behalf of a connected business account. On success, the sent Message is returned.
+   * @param businessConnectionId Unique identifier of the business connection on behalf of which the message will be sent
+   * @param chatId Unique identifier for the target chat
+   * @param checklist An object for the checklist to send
+   */
+  sendChecklist(
+    businessConnectionId: string,
+    chatId: number | string,
+    checklist: tg.Opts<'sendChecklist'>['checklist'],
+    extra?: tt.ExtraChecklist
+  ) {
+    return this.callApi('sendChecklist', {
+      business_connection_id: businessConnectionId,
+      chat_id: chatId,
+      checklist,
+      ...extra,
+    })
+  }
+
+  /**
+   * Edit a checklist on behalf of a connected business account. On success, the edited Message is returned.
+   * @param businessConnectionId Unique identifier of the business connection on behalf of which the message was sent
+   * @param chatId Unique identifier for the target chat
+   * @param messageId Unique identifier for the target message
+   * @param checklist An object for the new checklist
+   */
+  editMessageChecklist(
+    businessConnectionId: string,
+    chatId: number,
+    messageId: number,
+    checklist: tg.Opts<'editMessageChecklist'>['checklist'],
+    extra?: tt.ExtraEditMessageChecklist
+  ) {
+    return this.callApi('editMessageChecklist', {
+      business_connection_id: businessConnectionId,
+      chat_id: chatId,
+      message_id: messageId,
+      checklist,
+      ...extra,
+    })
+  }
+
+  // Suggested posts
+
+  /**
+   * Approve a suggested post in a direct messages chat. The bot must have the can_post_messages administrator right in the corresponding channel chat. Returns True on success.
+   * @param chatId Unique identifier for the target direct messages chat
+   * @param messageId Identifier of a suggested post message to approve
+   * @param sendDate Point in time (Unix timestamp) when the post is expected to be published
+   */
+  approveSuggestedPost(chatId: number, messageId: number, sendDate?: number) {
+    return this.callApi('approveSuggestedPost', {
+      chat_id: chatId,
+      message_id: messageId,
+      send_date: sendDate,
+    })
+  }
+
+  /**
+   * Decline a suggested post in a direct messages chat. The bot must have the can_manage_direct_messages administrator right in the corresponding channel chat. Returns True on success.
+   * @param chatId Unique identifier for the target direct messages chat
+   * @param messageId Identifier of a suggested post message to decline
+   * @param comment Comment for the creator of the suggested post; 0-128 characters
+   */
+  declineSuggestedPost(chatId: number, messageId: number, comment?: string) {
+    return this.callApi('declineSuggestedPost', {
+      chat_id: chatId,
+      message_id: messageId,
+      comment,
+    })
+  }
+
+  // Verification
+
+  /**
+   * Verify a user on behalf of the organization represented by the bot. Returns True on success.
+   * @param userId Unique identifier of the target user
+   * @param customDescription Custom description for the verification; 0-70 characters
+   */
+  verifyUser(userId: number, customDescription?: string) {
+    return this.callApi('verifyUser', {
+      user_id: userId,
+      custom_description: customDescription,
+    })
+  }
+
+  /**
+   * Verify a chat on behalf of the organization represented by the bot. Returns True on success.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   * @param customDescription Custom description for the verification; 0-70 characters
+   */
+  verifyChat(chatId: number | string, customDescription?: string) {
+    return this.callApi('verifyChat', {
+      chat_id: chatId,
+      custom_description: customDescription,
+    })
+  }
+
+  /**
+   * Remove verification from a user currently verified on behalf of the organization represented by the bot. Returns True on success.
+   * @param userId Unique identifier of the target user
+   */
+  removeUserVerification(userId: number) {
+    return this.callApi('removeUserVerification', {
+      user_id: userId,
+    })
+  }
+
+  /**
+   * Remove verification from a chat currently verified on behalf of the organization represented by the bot. Returns True on success.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   */
+  removeChatVerification(chatId: number | string) {
+    return this.callApi('removeChatVerification', {
+      chat_id: chatId,
+    })
+  }
+
+  // Paid media
+
+  /**
+   * Send paid media. On success, the sent Message is returned.
+   * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+   * @param starCount The number of Telegram Stars that must be paid to buy access to the media; 1-10000
+   * @param media An array describing the media to be sent; up to 10 items
+   */
+  sendPaidMedia(
+    chatId: number | string,
+    starCount: number,
+    media: tg.Opts<'sendPaidMedia'>['media'],
+    extra?: tt.ExtraPaidMedia
+  ) {
+    return this.callApi('sendPaidMedia', {
+      chat_id: chatId,
+      star_count: starCount,
+      media,
+      ...fmtCaption(extra),
+    })
+  }
+
+  // Message drafts
+
+  /**
+   * Stream a partial message to a user while it is being generated; supported only for bots with forum topic mode enabled. Returns True on success.
+   * @param chatId Unique identifier for the target private chat
+   * @param draftId Unique identifier of the message draft; must be non-zero
+   */
+  sendMessageDraft(
+    chatId: number,
+    draftId: number,
+    extra?: tt.ExtraMessageDraft
+  ) {
+    return this.callApi('sendMessageDraft', {
+      chat_id: chatId,
+      draft_id: draftId,
+      ...extra,
+    })
+  }
+
+  // Managed bots
+
+  /**
+   * Get the token of a managed bot. Returns the token as String on success.
+   * @param userId User identifier of the managed bot whose token will be returned
+   */
+  getManagedBotToken(userId: number) {
+    return this.callApi('getManagedBotToken', {
+      user_id: userId,
+    })
+  }
+
+  /**
+   * Revoke the current token of a managed bot and generate a new one. Returns the new token as String on success.
+   * @param userId User identifier of the managed bot whose token will be replaced
+   */
+  replaceManagedBotToken(userId: number) {
+    return this.callApi('replaceManagedBotToken', {
+      user_id: userId,
+    })
+  }
+
+  // Prepared messages & Mini Apps
+
+  /**
+   * Store a message that can be sent by a user of a Mini App. Returns a PreparedInlineMessage object.
+   * @param userId Unique identifier of the target user that can use the prepared message
+   * @param result An object describing the message to be sent
+   */
+  savePreparedInlineMessage(
+    userId: number,
+    result: tg.Opts<'savePreparedInlineMessage'>['result'],
+    extra?: tt.ExtraSavePreparedInlineMessage
+  ) {
+    return this.callApi('savePreparedInlineMessage', {
+      user_id: userId,
+      result,
+      ...extra,
+    })
+  }
+
+  /**
+   * Store a keyboard button that can be used by a user within a Mini App. Returns a PreparedKeyboardButton object.
+   * @param userId Unique identifier of the target user that can use the button
+   * @param button A request_users, request_chat, or request_managed_bot keyboard button to be saved
+   */
+  savePreparedKeyboardButton(
+    userId: number,
+    button: tg.Opts<'savePreparedKeyboardButton'>['button']
+  ) {
+    return this.callApi('savePreparedKeyboardButton', {
+      user_id: userId,
+      button,
+    })
+  }
+
+  // Profile & status
+
+  /**
+   * Change the profile photo of the bot. Returns True on success.
+   * @param photo The new profile photo to set
+   */
+  setMyProfilePhoto(photo: tg.Opts<'setMyProfilePhoto'>['photo']) {
+    return this.callApi('setMyProfilePhoto', {
+      photo,
+    })
+  }
+
+  /**
+   * Remove the profile photo of the bot. Returns True on success.
+   */
+  removeMyProfilePhoto() {
+    return this.callApi('removeMyProfilePhoto', {})
+  }
+
+  /**
+   * Change the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method requestEmojiStatusAccess. Returns True on success.
+   * @param userId Unique identifier of the target user
+   */
+  setUserEmojiStatus(userId: number, extra?: tt.ExtraSetUserEmojiStatus) {
+    return this.callApi('setUserEmojiStatus', {
+      user_id: userId,
+      ...extra,
+    })
+  }
+
+  // Stickers
+
+  /**
+   * Replace an existing sticker in a sticker set with a new one. Equivalent to calling deleteStickerFromSet, then addStickerToSet, then setStickerPositionInSet. Returns True on success.
+   * @param userId User identifier of the sticker set owner
+   * @param name Sticker set name
+   * @param oldSticker File identifier of the replaced sticker
+   * @param sticker An object with information about the added sticker
+   */
+  replaceStickerInSet(
+    userId: number,
+    name: string,
+    oldSticker: string,
+    sticker: tg.Opts<'replaceStickerInSet'>['sticker']
+  ) {
+    return this.callApi('replaceStickerInSet', {
+      user_id: userId,
+      name,
+      old_sticker: oldSticker,
+      sticker,
+    })
+  }
+
+  // Misc
+
+  /**
+   * Get a list of profile audios for a user. Returns a UserProfileAudios object.
+   * @param userId Unique identifier of the target user
+   * @param offset Sequential number of the first audio to be returned. By default, all audios are returned
+   * @param limit Limits the number of audios to be retrieved; 1-100. Defaults to 100
+   */
+  getUserProfileAudios(userId: number, offset?: number, limit?: number) {
+    return this.callApi('getUserProfileAudios', {
+      user_id: userId,
+      offset,
+      limit,
+    })
+  }
+
+  /**
+   * Set a tag for a regular member in a group or a supergroup. Returns True on success.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup
+   * @param userId Unique identifier of the target user
+   * @param tag New tag for the member; 0-16 characters, emoji are not allowed
+   */
+  setChatMemberTag(chatId: number | string, userId: number, tag?: string) {
+    return this.callApi('setChatMemberTag', {
+      chat_id: chatId,
+      user_id: userId,
+      tag,
     })
   }
 

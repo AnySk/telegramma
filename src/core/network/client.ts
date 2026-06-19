@@ -13,7 +13,7 @@ import { compactOptions } from '../helpers/compact'
 import MultipartStream from './multipart-stream'
 import TelegramError from './error'
 import { URL } from 'url'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const debug = require('debug')('telegraf:client')
 const { isStream } = MultipartStream
 

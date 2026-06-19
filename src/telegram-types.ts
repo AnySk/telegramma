@@ -160,6 +160,50 @@ export type ExtraEditForumTopic = MakeExtra<
   'editForumTopic',
   'message_thread_id'
 >
+export type ExtraPaidMedia = MakeExtra<'sendPaidMedia', 'star_count' | 'media'>
+export type ExtraChecklist = MakeExtra<
+  'sendChecklist',
+  'business_connection_id' | 'checklist'
+>
+export type ExtraEditMessageChecklist = MakeExtra<
+  'editMessageChecklist',
+  'business_connection_id' | 'message_id' | 'checklist'
+>
+export type ExtraMessageDraft = MakeExtra<'sendMessageDraft', 'draft_id'>
+export type ExtraSetUserEmojiStatus = MakeExtra<'setUserEmojiStatus', 'user_id'>
+export type ExtraGiftPremiumSubscription = MakeExtra<
+  'giftPremiumSubscription',
+  'user_id' | 'month_count' | 'star_count'
+>
+// sendGift accepts either user_id or chat_id as the recipient, so chat_id must
+// be preserved here (unlike MakeExtra, which always omits it).
+export type ExtraSendGift = Expand<Omit<Opts<'sendGift'>, 'gift_id'>>
+export type ExtraUpgradeGift = MakeExtra<
+  'upgradeGift',
+  'business_connection_id' | 'owned_gift_id'
+>
+export type ExtraGetBusinessAccountGifts = MakeExtra<
+  'getBusinessAccountGifts',
+  'business_connection_id'
+>
+export type ExtraGetUserGifts = MakeExtra<'getUserGifts', 'user_id'>
+export type ExtraGetChatGifts = MakeExtra<'getChatGifts'>
+export type ExtraPostStory = MakeExtra<
+  'postStory',
+  'business_connection_id' | 'content' | 'active_period'
+>
+export type ExtraRepostStory = MakeExtra<
+  'repostStory',
+  'business_connection_id' | 'from_chat_id' | 'from_story_id' | 'active_period'
+>
+export type ExtraEditStory = MakeExtra<
+  'editStory',
+  'business_connection_id' | 'story_id' | 'content'
+>
+export type ExtraSavePreparedInlineMessage = MakeExtra<
+  'savePreparedInlineMessage',
+  'user_id' | 'result'
+>
 
 export type MediaGroup =
   | readonly (InputMediaPhoto | InputMediaVideo)[]
