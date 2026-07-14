@@ -94,6 +94,18 @@ export type ExtraEditMessageText = MakeExtra<
   'editMessageText',
   'message_id' | 'inline_message_id' | 'text'
 >
+export type ExtraEditEphemeralMessageText = MakeExtra<
+  'editEphemeralMessageText',
+  'receiver_user_id' | 'ephemeral_message_id' | 'text'
+>
+export type ExtraEditEphemeralMessageCaption = MakeExtra<
+  'editEphemeralMessageCaption',
+  'receiver_user_id' | 'ephemeral_message_id' | 'caption'
+>
+export type ExtraEditEphemeralMessageMedia = MakeExtra<
+  'editEphemeralMessageMedia',
+  'receiver_user_id' | 'ephemeral_message_id' | 'media'
+>
 export type ExtraGame = MakeExtra<'sendGame', 'game_short_name'>
 export type NewInvoiceParameters = MakeExtra<
   'sendInvoice',

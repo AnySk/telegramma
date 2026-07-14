@@ -391,6 +391,82 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   }
 
   /**
+   * Extracts chat, receiver user and ephemeral message identifiers from the current message.
+   * @internal
+   */
+  private ephemeralMessageArgs(method: string) {
+    this.assert(this.chat, method)
+    const msg = this.msg
+    const receiverUser =
+      msg !== undefined && 'receiver_user' in msg
+        ? msg.receiver_user
+        : undefined
+    const ephemeralMessageId =
+      msg !== undefined && 'ephemeral_message_id' in msg
+        ? msg.ephemeral_message_id
+        : undefined
+    this.assert(receiverUser, method)
+    this.assert(ephemeralMessageId, method)
+    return [this.chat.id, receiverUser.id, ephemeralMessageId] as const
+  }
+
+  /**
+   * Context-aware shorthand for {@link Telegram.editEphemeralMessageText}. The current message must be an ephemeral message.
+   * @see https://core.telegram.org/bots/api#editephemeralmessagetext
+   */
+  editEphemeralMessageText(
+    text: string | FmtString,
+    extra?: tt.ExtraEditEphemeralMessageText
+  ) {
+    return this.telegram.editEphemeralMessageText(
+      ...this.ephemeralMessageArgs('editEphemeralMessageText'),
+      text,
+      extra
+    )
+  }
+
+  /**
+   * Context-aware shorthand for {@link Telegram.editEphemeralMessageCaption}. The current message must be an ephemeral message.
+   * @see https://core.telegram.org/bots/api#editephemeralmessagecaption
+   */
+  editEphemeralMessageCaption(
+    caption: string | FmtString | undefined,
+    extra?: tt.ExtraEditEphemeralMessageCaption
+  ) {
+    return this.telegram.editEphemeralMessageCaption(
+      ...this.ephemeralMessageArgs('editEphemeralMessageCaption'),
+      caption,
+      extra
+    )
+  }
+
+  /**
+   * Context-aware shorthand for {@link Telegram.editEphemeralMessageMedia}. The current message must be an ephemeral message.
+   * @see https://core.telegram.org/bots/api#editephemeralmessagemedia
+   */
+  editEphemeralMessageMedia(
+    media: tt.WrapCaption<tg.InputMedia>,
+    extra?: tt.ExtraEditEphemeralMessageMedia
+  ) {
+    return this.telegram.editEphemeralMessageMedia(
+      ...this.ephemeralMessageArgs('editEphemeralMessageMedia'),
+      media,
+      extra
+    )
+  }
+
+  /**
+   * Context-aware shorthand for {@link Telegram.editEphemeralMessageReplyMarkup}. The current message must be an ephemeral message.
+   * @see https://core.telegram.org/bots/api#editephemeralmessagereplymarkup
+   */
+  editEphemeralMessageReplyMarkup(markup: tg.InlineKeyboardMarkup | undefined) {
+    return this.telegram.editEphemeralMessageReplyMarkup(
+      ...this.ephemeralMessageArgs('editEphemeralMessageReplyMarkup'),
+      markup
+    )
+  }
+
+  /**
    * @see https://core.telegram.org/bots/api#editmessagelivelocation
    */
   editMessageLiveLocation(
@@ -1436,6 +1512,16 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   deleteMessages(messageIds: number[]) {
     this.assert(this.chat, 'deleteMessages')
     return this.telegram.deleteMessages(this.chat.id, messageIds)
+  }
+
+  /**
+   * Context-aware shorthand for {@link Telegram.deleteEphemeralMessage}. The current message must be an ephemeral message.
+   * @see https://core.telegram.org/bots/api#deleteephemeralmessage
+   */
+  deleteEphemeralMessage() {
+    return this.telegram.deleteEphemeralMessage(
+      ...this.ephemeralMessageArgs('deleteEphemeralMessage')
+    )
   }
 
   /**

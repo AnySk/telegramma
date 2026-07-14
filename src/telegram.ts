@@ -957,6 +957,101 @@ export class Telegram extends ApiClient {
     })
   }
 
+  /**
+   * Edit an ephemeral text message.
+   * Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param receiverUserId Identifier of the user who received the message
+   * @param ephemeralMessageId Identifier of the ephemeral message to edit
+   * @param text New text of the message
+   */
+  editEphemeralMessageText(
+    chatId: number | string,
+    receiverUserId: number,
+    ephemeralMessageId: number,
+    text: string | FmtString,
+    extra?: tt.ExtraEditEphemeralMessageText
+  ) {
+    const t = FmtString.normalise(text)
+    return this.callApi('editEphemeralMessageText', {
+      chat_id: chatId,
+      receiver_user_id: receiverUserId,
+      ephemeral_message_id: ephemeralMessageId,
+      ...extra,
+      ...t,
+    })
+  }
+
+  /**
+   * Edit the caption of an ephemeral message.
+   * Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param receiverUserId Identifier of the user who received the message
+   * @param ephemeralMessageId Identifier of the ephemeral message to edit
+   * @param caption New caption of the message
+   */
+  editEphemeralMessageCaption(
+    chatId: number | string,
+    receiverUserId: number,
+    ephemeralMessageId: number,
+    caption: string | FmtString | undefined,
+    extra?: tt.ExtraEditEphemeralMessageCaption
+  ) {
+    return this.callApi('editEphemeralMessageCaption', {
+      chat_id: chatId,
+      receiver_user_id: receiverUserId,
+      ephemeral_message_id: ephemeralMessageId,
+      ...extra,
+      ...fmtCaption({ caption }),
+    })
+  }
+
+  /**
+   * Edit the media of an ephemeral message. A new file can't be uploaded; use a previously uploaded file via its file_id or specify a URL.
+   * Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param receiverUserId Identifier of the user who received the message
+   * @param ephemeralMessageId Identifier of the ephemeral message to edit
+   * @param media New media content of the message
+   */
+  editEphemeralMessageMedia(
+    chatId: number | string,
+    receiverUserId: number,
+    ephemeralMessageId: number,
+    media: tt.WrapCaption<tg.InputMedia>,
+    extra?: tt.ExtraEditEphemeralMessageMedia
+  ) {
+    return this.callApi('editEphemeralMessageMedia', {
+      chat_id: chatId,
+      receiver_user_id: receiverUserId,
+      ephemeral_message_id: ephemeralMessageId,
+      media: fmtCaption(media),
+      ...extra,
+    })
+  }
+
+  /**
+   * Edit only the reply markup of an ephemeral message.
+   * Note that it is not guaranteed that the user will receive the message edit event, especially if they are offline.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param receiverUserId Identifier of the user who received the message
+   * @param ephemeralMessageId Identifier of the ephemeral message to edit
+   * @param markup Object for an inline keyboard
+   */
+  editEphemeralMessageReplyMarkup(
+    chatId: number | string,
+    receiverUserId: number,
+    ephemeralMessageId: number,
+    markup: tg.InlineKeyboardMarkup | undefined
+  ) {
+    return this.callApi('editEphemeralMessageReplyMarkup', {
+      chat_id: chatId,
+      receiver_user_id: receiverUserId,
+      ephemeral_message_id: ephemeralMessageId,
+      reply_markup: markup,
+    })
+  }
+
   editMessageLiveLocation(
     chatId: number | string | undefined,
     messageId: number | undefined,
@@ -1015,6 +1110,25 @@ export class Telegram extends ApiClient {
     return this.callApi('deleteMessages', {
       chat_id: chatId,
       message_ids: messageIds,
+    })
+  }
+
+  /**
+   * Delete an ephemeral message.
+   * Note that it is not guaranteed that the user will receive the message deletion event, especially if they are offline.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param receiverUserId Identifier of the user who received the message
+   * @param ephemeralMessageId Identifier of the ephemeral message to delete
+   */
+  deleteEphemeralMessage(
+    chatId: number | string,
+    receiverUserId: number,
+    ephemeralMessageId: number
+  ) {
+    return this.callApi('deleteEphemeralMessage', {
+      chat_id: chatId,
+      receiver_user_id: receiverUserId,
+      ephemeral_message_id: ephemeralMessageId,
     })
   }
 
