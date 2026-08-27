@@ -156,3 +156,18 @@ test('should generate hidden game button markup', (t) => {
   const markup = { ...Markup.button.game('play again', true) }
   t.deepEqual(markup, { text: 'play again', callback_game: {}, hide: true })
 })
+
+test('should generate disabled button markup', (t) => {
+  const markup = { ...Markup.button.disabled('not yet') }
+  t.deepEqual(markup, { text: 'not yet', disabled: {}, hide: false })
+})
+
+test('should generate force reply inline keyboard markup', (t) => {
+  const markup = { ...Markup.inlineKeyboard([]).forceReply().reply_markup }
+  t.deepEqual(markup, { inline_keyboard: [], force_reply: true })
+})
+
+test('should generate force reply keyboard markup', (t) => {
+  const markup = { ...Markup.keyboard([]).forceReply().reply_markup }
+  t.deepEqual(markup, { keyboard: [], force_reply: true })
+})

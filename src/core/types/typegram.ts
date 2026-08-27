@@ -56,6 +56,7 @@ export type InputRichBlockCollage = Typegram.InputRichBlockCollage<InputFile>
 export type InputRichBlockSlideshow =
   Typegram.InputRichBlockSlideshow<InputFile>
 export type InputRichBlockDetails = Typegram.InputRichBlockDetails<InputFile>
+export type InputRichBlockDocument = Typegram.InputRichBlockDocument<InputFile>
 export type InputRichBlockAnimation =
   Typegram.InputRichBlockAnimation<InputFile>
 export type InputRichBlockAudio = Typegram.InputRichBlockAudio<InputFile>

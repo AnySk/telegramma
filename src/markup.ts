@@ -58,6 +58,13 @@ export class Markup<
       is_persistent: value,
     })
   }
+
+  forceReply<T extends InlineKeyboardMarkup | ReplyKeyboardMarkup>(
+    this: Markup<T>,
+    value = true
+  ) {
+    return new Markup<T>({ ...this.reply_markup, force_reply: value })
+  }
 }
 
 export * as button from './button'

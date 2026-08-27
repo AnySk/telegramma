@@ -141,6 +141,13 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
     return this.update.removed_chat_boost as PropOr<U, 'removed_chat_boost'>
   }
 
+  get stoppedMessageGeneration() {
+    return this.update.stopped_message_generation as PropOr<
+      U,
+      'stopped_message_generation'
+    >
+  }
+
   /** Shorthand for any `message` object present in the current update. One of
    * `message`, `edited_message`, `channel_post`, `edited_channel_post` or
    * `callback_query.message`
@@ -162,7 +169,8 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
       this.chatJoinRequest ??
       this.chatMember ??
       this.myChatMember ??
-      this.removedChatBoost
+      this.removedChatBoost ??
+      this.stoppedMessageGeneration
     )?.chat as Getter<U, 'chat'>
   }
 
@@ -332,7 +340,10 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   /**
    * @see https://core.telegram.org/bots/api#editmessagetext
    */
-  editMessageText(text: string | FmtString, extra?: tt.ExtraEditMessageText) {
+  editMessageText(
+    text: string | FmtString | undefined,
+    extra?: tt.ExtraEditMessageText
+  ) {
     this.assert(this.msgId ?? this.inlineMessageId, 'editMessageText')
     return this.telegram.editMessageText(
       this.chat?.id,
@@ -415,7 +426,7 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
    * @see https://core.telegram.org/bots/api#editephemeralmessagetext
    */
   editEphemeralMessageText(
-    text: string | FmtString,
+    text: string | FmtString | undefined,
     extra?: tt.ExtraEditEphemeralMessageText
   ) {
     return this.telegram.editEphemeralMessageText(

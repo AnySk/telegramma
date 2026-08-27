@@ -861,16 +861,16 @@ export class Telegram extends ApiClient {
    * @param chatId Required if inlineMessageId is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    * @param messageId Required if inlineMessageId is not specified. Identifier of the sent message
    * @param inlineMessageId Required if chatId and messageId are not specified. Identifier of the inline message
-   * @param text New text of the message
+   * @param text New text of the message; required if `rich_message` isn't specified in extra
    */
   editMessageText(
     chatId: number | string | undefined,
     messageId: number | undefined,
     inlineMessageId: string | undefined,
-    text: string | FmtString,
+    text: string | FmtString | undefined,
     extra?: tt.ExtraEditMessageText
   ) {
-    const t = FmtString.normalise(text)
+    const t = text === undefined ? undefined : FmtString.normalise(text)
     return this.callApi('editMessageText', {
       chat_id: chatId,
       message_id: messageId,
@@ -963,16 +963,16 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
    * @param receiverUserId Identifier of the user who received the message
    * @param ephemeralMessageId Identifier of the ephemeral message to edit
-   * @param text New text of the message
+   * @param text New text of the message; required if `rich_message` isn't specified in extra
    */
   editEphemeralMessageText(
     chatId: number | string,
     receiverUserId: number,
     ephemeralMessageId: number,
-    text: string | FmtString,
+    text: string | FmtString | undefined,
     extra?: tt.ExtraEditEphemeralMessageText
   ) {
-    const t = FmtString.normalise(text)
+    const t = text === undefined ? undefined : FmtString.normalise(text)
     return this.callApi('editEphemeralMessageText', {
       chat_id: chatId,
       receiver_user_id: receiverUserId,

@@ -180,3 +180,10 @@ export function webApp(
     hide,
   }
 }
+
+export function disabled(
+  text: string,
+  hide = false
+): Hideable<InlineKeyboardButton.DisabledButton> {
+  return { text, disabled: {}, hide }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@anysk/telegramma",
-  "version": "4.19.0",
+  "version": "4.20.0",
   "description": "Modern Telegram Bot Framework",
   "license": "MIT",
   "author": "AnySk",
@@ -94,7 +94,7 @@
   },
   "types": "./typings/index.d.ts",
   "dependencies": {
-    "@anysk/telegramma-types": "^10.2.0",
+    "@anysk/telegramma-types": "^10.3.0",
     "abort-controller": "^3.0.0",
     "debug": "^4.4.3",
     "mri": "^1.2.0",
