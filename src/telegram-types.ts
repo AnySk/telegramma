@@ -153,6 +153,17 @@ export type ExtraRichMessageDraft = MakeExtra<
   'sendRichMessageDraft',
   'draft_id' | 'rich_message'
 >
+export type ExtraWidget = MakeExtra<'sendWidget', 'html'>
+export type ExtraSharedWidget = MakeExtra<'sendSharedWidget', 'widget_id'>
+export type ExtraEditMessageWidgetData = MakeExtra<
+  'editMessageWidgetData',
+  'message_id' | 'inline_message_id'
+>
+export type ExtraVerifyUser = MakeExtra<
+  'verifyUser',
+  'user_id' | 'custom_description'
+>
+export type ExtraVerifyChat = MakeExtra<'verifyChat', 'custom_description'>
 export type ExtraDeleteMessageReaction = MakeExtra<
   'deleteMessageReaction',
   'message_id'

@@ -148,6 +148,14 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
     >
   }
 
+  get widgetQuery() {
+    return this.update.widget_query as PropOr<U, 'widget_query'>
+  }
+
+  get sharedWidgetQuery() {
+    return this.update.shared_widget_query as PropOr<U, 'shared_widget_query'>
+  }
+
   /** Shorthand for any `message` object present in the current update. One of
    * `message`, `edited_message`, `channel_post`, `edited_channel_post` or
    * `callback_query.message`
@@ -170,7 +178,8 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
       this.chatMember ??
       this.myChatMember ??
       this.removedChatBoost ??
-      this.stoppedMessageGeneration
+      this.stoppedMessageGeneration ??
+      this.widgetQuery
     )?.chat as Getter<U, 'chat'>
   }
 
@@ -187,7 +196,8 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
   }
 
   get inlineMessageId() {
-    return (this.callbackQuery ?? this.chosenInlineResult)?.inline_message_id
+    return (this.callbackQuery ?? this.chosenInlineResult ?? this.widgetQuery)
+      ?.inline_message_id
   }
 
   get passportData() {
@@ -334,6 +344,30 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
     return this.telegram.answerPreCheckoutQuery(
       this.preCheckoutQuery.id,
       ...args
+    )
+  }
+
+  /**
+   * Answers the current `widget_query` or `shared_widget_query`.
+   * @see https://core.telegram.org/bots/api#answerwidgetquery
+   */
+  answerWidgetQuery(...args: Shorthand<'answerWidgetQuery'>) {
+    const query = this.widgetQuery ?? this.sharedWidgetQuery
+    this.assert(query, 'answerWidgetQuery')
+    return this.telegram.answerWidgetQuery(query.id, ...args)
+  }
+
+  /**
+   * Edits data of the widget in the message the current update refers to.
+   * @see https://core.telegram.org/bots/api#editmessagewidgetdata
+   */
+  editMessageWidgetData(extra: tt.ExtraEditMessageWidgetData) {
+    this.assert(this.msgId ?? this.inlineMessageId, 'editMessageWidgetData')
+    return this.telegram.editMessageWidgetData(
+      this.chat?.id,
+      this.msgId,
+      this.inlineMessageId,
+      extra
     )
   }
 
@@ -780,6 +814,42 @@ export class Context<U extends Deunionize<tg.Update> = tg.Update> {
    */
   replyWithRichMessage(...args: Shorthand<'sendRichMessage'>) {
     return this.sendRichMessage(...args)
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendwidget
+   */
+  sendWidget(html: string, extra?: tt.ExtraWidget) {
+    this.assert(this.chat, 'sendWidget')
+    return this.telegram.sendWidget(this.chat.id, html, {
+      message_thread_id: getThreadId(this),
+      ...extra,
+    })
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendwidget
+   */
+  replyWithWidget(...args: Shorthand<'sendWidget'>) {
+    return this.sendWidget(...args)
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendsharedwidget
+   */
+  sendSharedWidget(widgetId: string, extra?: tt.ExtraSharedWidget) {
+    this.assert(this.chat, 'sendSharedWidget')
+    return this.telegram.sendSharedWidget(this.chat.id, widgetId, {
+      message_thread_id: getThreadId(this),
+      ...extra,
+    })
+  }
+
+  /**
+   * @see https://core.telegram.org/bots/api#sendsharedwidget
+   */
+  replyWithSharedWidget(...args: Shorthand<'sendSharedWidget'>) {
+    return this.sendSharedWidget(...args)
   }
 
   /**
@@ -1733,6 +1803,8 @@ type GetUserFromAnySource<U extends tg.Update> =
           | tg.Update.ChatMemberUpdate
           | tg.Update.MyChatMemberUpdate
           | tg.Update.ChatJoinRequestUpdate
+          | tg.Update.WidgetQueryUpdate
+          | tg.Update.SharedWidgetQueryUpdate
           // these updates have `user`
           | tg.Update.MessageReactionUpdate
           | tg.Update.PollAnswerUpdate
@@ -1754,7 +1826,9 @@ function getUserFromAnySource<U extends tg.Update>(ctx: Context<U>) {
       ctx.chosenInlineResult ??
       ctx.chatMember ??
       ctx.myChatMember ??
-      ctx.chatJoinRequest
+      ctx.chatJoinRequest ??
+      ctx.widgetQuery ??
+      ctx.sharedWidgetQuery
     )?.from ??
     (ctx.messageReaction ?? ctx.pollAnswer ?? ctx.chatBoost?.boost.source)?.user
   )
@@ -1767,12 +1841,18 @@ type GetMsgId<U extends tg.Update> =
       ? number
       : U extends tg.Update.MessageReactionCountUpdate
         ? number
-        : undefined
+        : U extends tg.Update.WidgetQueryUpdate
+          ? number | undefined
+          : undefined
 
 function getMsgIdFromAnySource<U extends tg.Update>(ctx: Context<U>) {
   const msg = getMessageFromAnySource(ctx)
-  return (msg ?? ctx.messageReaction ?? ctx.messageReactionCount)
-    ?.message_id as GetMsgId<U>
+  return (
+    msg ??
+    ctx.messageReaction ??
+    ctx.messageReactionCount ??
+    ctx.widgetQuery
+  )?.message_id as GetMsgId<U>
 }
 
 type GetText<U extends tg.Update> =

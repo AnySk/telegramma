@@ -25,6 +25,95 @@ test('should provide chat and sender info', (t) =>
     })
   ))
 
+test('should provide chat, sender and message info for widget queries', (t) =>
+  t.notThrowsAsync(
+    new Promise((resolve) => {
+      const bot = createBot()
+      bot.on('widget_query', (ctx) => {
+        t.is(ctx.widgetQuery.id, 'q1')
+        t.is(ctx.from.id, 42)
+        t.is(ctx.chat.id, 1)
+        t.is(ctx.msgId, 7)
+        t.is(ctx.inlineMessageId, undefined)
+        resolve()
+      })
+      bot.handleUpdate({
+        widget_query: {
+          id: 'q1',
+          from: { id: 42 },
+          chat: { id: 1 },
+          message_id: 7,
+          chat_instance: 'ci',
+          type: { type: 'data' },
+          data: 'ping',
+        },
+      })
+    })
+  ))
+
+test('should provide sender info for shared widget queries', (t) =>
+  t.notThrowsAsync(
+    new Promise((resolve) => {
+      const bot = createBot()
+      bot.on('shared_widget_query', (ctx) => {
+        t.is(ctx.sharedWidgetQuery.widget_id, 'w1')
+        t.is(ctx.from.id, 42)
+        t.is(ctx.chat, undefined)
+        resolve()
+      })
+      bot.handleUpdate({
+        shared_widget_query: {
+          id: 'q2',
+          from: { id: 42 },
+          type: { type: 'data' },
+          data: 'ping',
+          widget_id: 'w1',
+        },
+      })
+    })
+  ))
+
+test('should answer widget queries and edit widget data from context', async (t) => {
+  const calls = []
+  const bot = createBot()
+  bot.use((ctx, next) => {
+    ctx.telegram.callApi = (method, payload) => {
+      calls.push([method, JSON.parse(JSON.stringify(payload))])
+      return Promise.resolve(true)
+    }
+    return next()
+  })
+  bot.on('widget_query', async (ctx) => {
+    await ctx.answerWidgetQuery('pong')
+    await ctx.editMessageWidgetData({ chat_data: 'x' })
+  })
+  bot.on('shared_widget_query', (ctx) => ctx.answerWidgetQuery())
+  await bot.handleUpdate({
+    widget_query: {
+      id: 'q1',
+      from: { id: 42 },
+      inline_message_id: 'im1',
+      chat_instance: 'ci',
+      type: { type: 'data' },
+      data: 'ping',
+    },
+  })
+  await bot.handleUpdate({
+    shared_widget_query: {
+      id: 'q2',
+      from: { id: 42 },
+      type: { type: 'data' },
+      data: 'ping',
+      widget_id: 'w1',
+    },
+  })
+  t.deepEqual(calls, [
+    ['answerWidgetQuery', { widget_query_id: 'q1', data: 'pong' }],
+    ['editMessageWidgetData', { inline_message_id: 'im1', chat_data: 'x' }],
+    ['answerWidgetQuery', { widget_query_id: 'q2' }],
+  ])
+})
+
 test('should share state', (t) =>
   t.notThrowsAsync(
     new Promise((resolve) => {

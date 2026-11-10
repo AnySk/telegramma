@@ -191,6 +191,18 @@ const replyContext: ReplyContext = {
     this.assert(this.chat, 'replyWithVoice')
     return this.telegram.sendVoice(this.chat.id, voice, makeReply(this, extra))
   },
+  replyWithWidget(this: Context, html, extra) {
+    this.assert(this.chat, 'replyWithWidget')
+    return this.telegram.sendWidget(this.chat.id, html, makeReply(this, extra))
+  },
+  replyWithSharedWidget(this: Context, widgetId, extra) {
+    this.assert(this.chat, 'replyWithSharedWidget')
+    return this.telegram.sendSharedWidget(
+      this.chat.id,
+      widgetId,
+      makeReply(this, extra)
+    )
+  },
 }
 
 /**
@@ -218,6 +230,8 @@ export function useNewReplies<C extends Context>(): Middleware<C> {
     ctx.replyWithInvoice = replyContext.replyWithInvoice
     ctx.replyWithGame = replyContext.replyWithGame
     ctx.replyWithVoice = replyContext.replyWithVoice
+    ctx.replyWithWidget = replyContext.replyWithWidget
+    ctx.replyWithSharedWidget = replyContext.replyWithSharedWidget
     ctx.replyWithPoll = replyContext.replyWithPoll
     ctx.replyWithQuiz = replyContext.replyWithQuiz
     ctx.replyWithChatAction = replyContext.replyWithChatAction

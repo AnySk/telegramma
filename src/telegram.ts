@@ -132,7 +132,7 @@ export class Telegram extends ApiClient {
    * @param text Text of the message to be sent
    */
   sendMessage(
-    chatId: number | string,
+    chatId: number | string | undefined,
     text: string | FmtString,
     extra?: tt.ExtraReplyMessage
   ) {
@@ -232,7 +232,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendLocation(
-    chatId: number | string,
+    chatId: number | string | undefined,
     latitude: number,
     longitude: number,
     extra?: tt.ExtraLocation
@@ -246,7 +246,7 @@ export class Telegram extends ApiClient {
   }
 
   sendVenue(
-    chatId: number | string,
+    chatId: number | string | undefined,
     latitude: number,
     longitude: number,
     title: string,
@@ -279,7 +279,7 @@ export class Telegram extends ApiClient {
   }
 
   sendContact(
-    chatId: number | string,
+    chatId: number | string | undefined,
     phoneNumber: string,
     firstName: string,
     extra?: tt.ExtraContact
@@ -296,7 +296,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendPhoto(
-    chatId: number | string,
+    chatId: number | string | undefined,
     photo: tg.Opts<'sendPhoto'>['photo'],
     extra?: tt.ExtraPhoto
   ) {
@@ -320,7 +320,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendDocument(
-    chatId: number | string,
+    chatId: number | string | undefined,
     document: tg.Opts<'sendDocument'>['document'],
     extra?: tt.ExtraDocument
   ) {
@@ -338,7 +338,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendAudio(
-    chatId: number | string,
+    chatId: number | string | undefined,
     audio: tg.Opts<'sendAudio'>['audio'],
     extra?: tt.ExtraAudio
   ) {
@@ -354,7 +354,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendSticker(
-    chatId: number | string,
+    chatId: number | string | undefined,
     sticker: tg.Opts<'sendSticker'>['sticker'],
     extra?: tt.ExtraSticker
   ) {
@@ -367,7 +367,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendVideo(
-    chatId: number | string,
+    chatId: number | string | undefined,
     video: tg.Opts<'sendVideo'>['video'],
     extra?: tt.ExtraVideo
   ) {
@@ -383,7 +383,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendAnimation(
-    chatId: number | string,
+    chatId: number | string | undefined,
     animation: tg.Opts<'sendAnimation'>['animation'],
     extra?: tt.ExtraAnimation
   ) {
@@ -399,7 +399,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendVideoNote(
-    chatId: number | string,
+    chatId: number | string | undefined,
     videoNote: string | tg.InputFileVideoNote,
     extra?: tt.ExtraVideoNote
   ) {
@@ -415,7 +415,7 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    */
   sendVoice(
-    chatId: number | string,
+    chatId: number | string | undefined,
     voice: tg.Opts<'sendVoice'>['voice'],
     extra?: tt.ExtraVoice
   ) {
@@ -1831,7 +1831,7 @@ export class Telegram extends ApiClient {
    * @param photo The static photo to send
    */
   sendLivePhoto(
-    chatId: number | string,
+    chatId: number | string | undefined,
     livePhoto: tg.Opts<'sendLivePhoto'>['live_photo'],
     photo: tg.Opts<'sendLivePhoto'>['photo'],
     extra?: tt.ExtraLivePhoto
@@ -1850,7 +1850,7 @@ export class Telegram extends ApiClient {
    * @param richMessage The message to be sent
    */
   sendRichMessage(
-    chatId: number | string,
+    chatId: number | string | undefined,
     richMessage: tg.InputRichMessage,
     extra?: tt.ExtraRichMessage
   ) {
@@ -2070,6 +2070,26 @@ export class Telegram extends ApiClient {
       business_connection_id: businessConnectionId,
       owned_gift_id: ownedGiftId,
     })
+  }
+
+  /**
+   * Delete a regular gift owned by a managed business account without receiving Telegram Stars for it. Requires the can_convert_gifts_to_stars business bot right. Returns True on success.
+   * @param businessConnectionId Unique identifier of the business connection
+   * @param ownedGiftId Unique identifier of the regular gift that should be deleted
+   */
+  deleteBusinessAccountGift(businessConnectionId: string, ownedGiftId: string) {
+    return this.callApi('deleteBusinessAccountGift', {
+      business_connection_id: businessConnectionId,
+      owned_gift_id: ownedGiftId,
+    })
+  }
+
+  /**
+   * Get information about a unique gift by its name. Returns a UniqueGift object on success.
+   * @param name Unique name of the gift
+   */
+  getUniqueGift(name: string) {
+    return this.callApi('getUniqueGift', { name })
   }
 
   /**
@@ -2443,10 +2463,15 @@ export class Telegram extends ApiClient {
    * @param userId Unique identifier of the target user
    * @param customDescription Custom description for the verification; 0-70 characters
    */
-  verifyUser(userId: number, customDescription?: string) {
+  verifyUser(
+    userId: number,
+    customDescription?: string,
+    extra?: tt.ExtraVerifyUser
+  ) {
     return this.callApi('verifyUser', {
       user_id: userId,
       custom_description: customDescription,
+      ...extra,
     })
   }
 
@@ -2455,10 +2480,15 @@ export class Telegram extends ApiClient {
    * @param chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
    * @param customDescription Custom description for the verification; 0-70 characters
    */
-  verifyChat(chatId: number | string, customDescription?: string) {
+  verifyChat(
+    chatId: number | string,
+    customDescription?: string,
+    extra?: tt.ExtraVerifyChat
+  ) {
     return this.callApi('verifyChat', {
       chat_id: chatId,
       custom_description: customDescription,
+      ...extra,
     })
   }
 
@@ -2660,6 +2690,96 @@ export class Telegram extends ApiClient {
       user_id: userId,
       tag,
     })
+  }
+
+  // Widgets
+
+  /**
+   * Send a message with an HTML widget. On success, the sent Message is returned.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param html HTML code of the widget, 1-32768 bytes
+   */
+  sendWidget(chatId: number | string, html: string, extra?: tt.ExtraWidget) {
+    return this.callApi('sendWidget', {
+      chat_id: chatId,
+      html,
+      ...fmtCaption(extra),
+    })
+  }
+
+  /**
+   * Send again a shared widget created by the bot. On success, the sent Message is returned.
+   * @param chatId Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param widgetId Unique identifier of the shared widget
+   */
+  sendSharedWidget(
+    chatId: number | string,
+    widgetId: string,
+    extra?: tt.ExtraSharedWidget
+  ) {
+    return this.callApi('sendSharedWidget', {
+      chat_id: chatId,
+      widget_id: widgetId,
+      ...fmtCaption(extra),
+    })
+  }
+
+  /**
+   * Edit data of a widget in a message sent by the bot or via the bot (for inline bots). Returns True on success.
+   * @param chatId Required if inlineMessageId is not specified. Unique identifier for the target chat or username of the target supergroup (in the format @username)
+   * @param messageId Required if inlineMessageId is not specified. Identifier of the message with the widget
+   * @param inlineMessageId Required if chatId and messageId are not specified. Identifier of the inline message
+   * @param extra New `public_data` and/or `chat_data` of the widget; pass an empty string to remove the data, omit to keep it unchanged
+   */
+  editMessageWidgetData(
+    chatId: number | string | undefined,
+    messageId: number | undefined,
+    inlineMessageId: string | undefined,
+    extra: tt.ExtraEditMessageWidgetData
+  ) {
+    return this.callApi('editMessageWidgetData', {
+      chat_id: chatId,
+      message_id: messageId,
+      inline_message_id: inlineMessageId,
+      ...extra,
+    })
+  }
+
+  /**
+   * Edit public data of a shared widget created by the bot. A shared widget can be edited at most once per second. Returns True on success.
+   * @param widgetId Unique identifier of the shared widget
+   * @param publicData New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data
+   * @param cacheTime The maximum amount of time in seconds that the public data of the widget may be cached client-side; 5-3600
+   */
+  editSharedWidgetData(
+    widgetId: string,
+    publicData: string,
+    cacheTime?: number
+  ) {
+    return this.callApi('editSharedWidgetData', {
+      widget_id: widgetId,
+      public_data: publicData,
+      cache_time: cacheTime,
+    })
+  }
+
+  /**
+   * Send an answer to a query from a widget. The query must be answered within 15 seconds. Returns True on success.
+   * @param widgetQueryId Unique identifier for the query to be answered
+   * @param data Data to be returned to the widget, 0-1024 bytes
+   */
+  answerWidgetQuery(widgetQueryId: string, data?: string) {
+    return this.callApi('answerWidgetQuery', {
+      widget_query_id: widgetQueryId,
+      data,
+    })
+  }
+
+  /**
+   * Get the list of backdrops, which can be used as the background of a theme of the screen for sharing a link to a user or a chat. Returns a ChatShareThemeBackdrops object.
+   */
+  getChatShareThemeBackdrops() {
+    return this.callApi('getChatShareThemeBackdrops', {})
   }
 
   /**
