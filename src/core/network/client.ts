@@ -291,11 +291,15 @@ async function answerToWebhook(
   return true
 }
 
+const redact = (text: string) =>
+  text.replace(/\/(bot|user)(\d+):[^/\s]+\//g, '/$1$2:[REDACTED]/')
+
 function redactToken(error: Error): never {
-  error.message = error.message.replace(
-    /\/(bot|user)(\d+):[^/]+\//,
-    '/$1$2:[REDACTED]/'
-  )
+  error.message = redact(error.message)
+  // The stack is normally formatted lazily, from the already redacted message.
+  // If something has read it before (instrumentation, a debugger, a custom
+  // `Error.prepareStackTrace`), it still holds the original URL with the token.
+  if (typeof error.stack === 'string') error.stack = redact(error.stack)
   throw error
 }
 
